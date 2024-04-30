@@ -1,0 +1,32 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:16
+    command:
+      ["postgres", "-c", "log_statement=all", "-c", "log_destination=stderr"]
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_DB: waddi
+      POSTGRES_USER: waddi
+      POSTGRES_PASSWORD: password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U waddi"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  # keycloak:
+  #   image: quay.io/keycloak/keycloak:legacy
+  #   environment:
+  #     DB_VENDOR: POSTGRES
+  #     DB_ADDR: postgres
+  #     DB_DATABASE: keycloak
+  #     DB_USER: lore
+  #     DB_SCHEMA: public
+  #     DB_PASSWORD: password
+  #     KEYCLOAK_USER: admin
+  #     KEYCLOAK_PASSWORD: password
+  #   ports:
+  #     - 8080:8080
+  #   depends_on:
+  #     - postgres
