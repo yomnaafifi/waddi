@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,11 +43,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
 
-    'admin'
-    'auth'
-    'customer'
-    'driver'
-    'utils'
+    'admin_user',
+    'authentication',
+    'customer',
+    'driver',
+    'utils',
 ]
 
 REST_FRAMEWORK = {
@@ -102,11 +103,18 @@ WSGI_APPLICATION = 'waddi.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
+
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'waddi',
+        'USER': 'waddi',
+        'PASSWORD': 'password',
+        'HOST': '127.0.0.1',  # Docker container name
+        'PORT': '5433',         # Default PostgreSQL port
     }
 }
+
+
 
 
 # Password validation
@@ -145,7 +153,17 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL = "authentication.CustomUser"
+
