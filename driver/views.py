@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from rest_framework import generics, status
 from drf_spectacular.utils import extend_schema
-from driver.serializer import CreateDriverSerializer
+from driver.serializer import BaseUserSerializer, CreateDriverUserSerializer
 from authentication.forms import DriverSignupForm
 from rest_framework.response import Response
 class DriverSignupView(generics.CreateAPIView):
-    serializer_class = CreateDriverSerializer
+    serializer_class = CreateDriverUserSerializer
 
-    @extend_schema(responses=CreateDriverSerializer)
+    @extend_schema(responses=CreateDriverUserSerializer)
     def post(self, request, *args, **kwargs):
         form = DriverSignupForm
         if form.is_valid():
