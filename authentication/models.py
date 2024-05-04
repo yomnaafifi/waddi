@@ -3,6 +3,7 @@ from authentication.managers import  CustomUserManager
 from django.db import models
 from datetime import date 
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
 import re
 
@@ -13,7 +14,11 @@ class CustomUser(AbstractBaseUser):
         if not re.match(pattern, value):
             raise ValidationError(_("Phone number isn't correct"))
 
-    email = models.EmailField(unique = True)
+    email_validator = RegexValidator(
+    regex=r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    message='Enter a valid email address.',
+    )
+    email = models.EmailField(unique=True, validators=[email_validator])
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     birthdate = models.DateField()
