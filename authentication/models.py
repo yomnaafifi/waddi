@@ -9,9 +9,9 @@ import re
 
 class CustomUser(AbstractBaseUser):
     def validate_phone_number(value):
-        pattern = r'^01[0-2]\d{1}-\d{3}-\d{4}$'  
+        pattern = r'^01[0-2]\d{1}-?\d{3}-?\d{4}$'
         if not re.match(pattern, value):
-            raise ValidationError(_("Phone number must be in the format 01X-XXX-XXXX"))
+            raise ValidationError(_("Phone number isn't correct"))
 
     email = models.EmailField(unique = True)
     first_name = models.CharField(max_length=100)
