@@ -4,13 +4,15 @@ from drf_spectacular.utils import extend_schema
 from customer.models import Customer
 from customer.serializer import BaseUserSerializer 
 
+
+
 class CustomerSignupView(generics.CreateAPIView):
     queryset = Customer.objects.all()
     serializer_class = BaseUserSerializer  
 
     @extend_schema(request= BaseUserSerializer)
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(request.data)
+        serializer = self.get_serializer(data = request.data)
         if serializer.is_valid():
             user = serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED) #should redirect to home? 
