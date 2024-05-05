@@ -2,18 +2,21 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 import re
 
+
 class CustomUserManager(BaseUserManager):
-   
+
     def create_user(self, email, password, **extra_fields):
 
-        if not email: #where to put the email validation in managers or the custom user 
+        if (
+            not email
+        ):  # where to put the email validation in managers or the custom user
             raise ValueError(_("The Email must be set"))
-        
-        email_regex = r'^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$'
-        
+
+        email_regex = r"^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$"
+
         if not re.match(email_regex, email):
             raise ValueError("Invalid Email format")
-        
+
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
