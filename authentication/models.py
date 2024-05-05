@@ -1,11 +1,33 @@
 from django.contrib.auth.models import AbstractBaseUser
-from authentication.managers import CustomUserManager
 from django.db import models
 from datetime import date
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
 import re
+from django.contrib.auth.base_user import BaseUserManager
+
+
+class CustomUserManager(BaseUserManager):
+
+    def create_user(self, email, password, **extra_fields):
+
+        if (
+            not email
+        ):  # where to put the email validation in managers or the custom user
+            raise ValueError(_("The Email must be set"))
+
+        email_regex = r"^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$"
+
+        if not re.match(email_regex, email):
+            raise ValueError("Invalid Email format")
+
+        email = self.normalize_email(email)
+        user = self.model(email=self.normalize_email(email), **extra_fields)
+        print("pwd:::::::::::::::::::::", password)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
 
 class CustomUser(AbstractBaseUser):
@@ -49,3 +71,5 @@ class CustomUser(AbstractBaseUser):
 
     class Meta:
         db_table = "user"
+        verbose_name = "User"
+        verbose_name_plural = "Users"

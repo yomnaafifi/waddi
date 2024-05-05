@@ -1,5 +1,7 @@
 from django.db import models
-from authentication.models import CustomUser
+from django.contrib.auth import get_user_model
+
+CustomUser = get_user_model()
 
 
 class Customer(models.Model):

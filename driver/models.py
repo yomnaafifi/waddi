@@ -1,5 +1,8 @@
 from django.db import models
-from authentication.models import CustomUser
+from django.contrib.auth import get_user_model
+
+CustomUser = get_user_model()
+
 
 class Driver(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
