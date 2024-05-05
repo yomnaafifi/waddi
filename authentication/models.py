@@ -29,6 +29,9 @@ class CustomUser(AbstractBaseUser):
     def age(self):
         today = date.today()
         age = today.year - self.birthdate.year - ((today.month, today.day) < (self.birthdate.month, self.birthdate.day))
+        
+        if age < 18:
+            raise ValidationError("You must be 18 or older to sign up.")
         return age
 
     is_customer = models.BooleanField(default=False)

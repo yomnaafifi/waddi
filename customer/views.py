@@ -2,22 +2,40 @@ from rest_framework import status, generics
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
 from customer.models import Customer
-from customer.serializer import BaseUserSerializer 
+from customer.serializer import BaseUserSerializer, CustomerUserSerializer
+from django.core.exceptions import ValidationError
+from authentication.models import CustomUser
+from datetime import date
 
+
+VALID_USER="valid user"
+EXISTING_CREDINTALS="user with either the email or usename already exist"
+def validate_user_data(data):
+      
+        email=data['email']
+
+        if CustomUser.objects.filter(email=email).count()==0 :
+            return VALID_USER
+        else:
+            return EXISTING_CREDINTALS
+        
 
 
 class CustomerSignupView(generics.CreateAPIView):
     queryset = Customer.objects.all()
-    serializer_class = BaseUserSerializer  
+    serializer_class = CustomerUserSerializer
 
-    @extend_schema(request= BaseUserSerializer)
+    @extend_schema(request= CustomerUserSerializer)
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data = request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED) #should redirect to home? 
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
+            print('testing:', request.data)
+            
+            serializer = self.get_serializer(data = request.data)
+            if serializer.is_valid():
+                user = CustomUser.objects.create(**request.data)
+                customer = Customer.objects.create(user = user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED) #should redirect to home? 
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
 
 
 
