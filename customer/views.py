@@ -32,8 +32,9 @@ class CustomerSignupView(generics.CreateAPIView):
 
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            user = CustomUser.objects.create(**request.data)
+            user = CustomUser.objects.create(**request.data["user"])
             customer = Customer.objects.create(user=user)
+            customer.preferred_method = request.data["preferred_method"]
             return Response(
                 serializer.data, status=status.HTTP_201_CREATED
             )  # should redirect to home?
