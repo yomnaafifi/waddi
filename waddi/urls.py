@@ -40,6 +40,7 @@ urlpatterns = [
     path("customer/", include("customer.urls")),
     path("driver/", include("driver.urls")),
     path("auth/", include("authentication.urls")),
+    path("orders/", include("orders.urls")),
     # path('admin_user/', include('admin_user.urls')),
     # path('authentication/', include('authentication.urls')),
     # path('utils/', include('utils.urls')),

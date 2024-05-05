@@ -1,7 +1,8 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 from orders.models import Orders
 
 
-class CreateOrderSerializer(ModelSerializer):
-    model = Orders
-    fields = "__all__"
+class CreateOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Orders
+        fields = "__all__"
