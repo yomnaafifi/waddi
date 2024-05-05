@@ -1,11 +1,13 @@
 from django.db import models
 from customer.models import Customer
+from datetime import datetime
 
 
 class Orders(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     order_notes = models.TextField(blank=True, null=True)
-    date_created = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateField(auto_now_add=True)
+    time_created = models.TimeField(default=datetime.now().time())
     types = {
         ("plastic&rubber", "Plastic and Rubber"),
         ("appliances", "Appliances"),
@@ -23,7 +25,8 @@ class Orders(models.Model):
         (4, "tricycle 2700 kg"),
     }
     chosen_truck = models.CharField(max_length=100, choices=truck_types, null=True)
-    pickup_time = models.DateTimeField()
+    pickup_date = models.DateField(null=True)
+    pickup_time = models.TimeField(null=True)
     need_packing = models.BooleanField()
     need_labor = models.BooleanField()
 
