@@ -16,6 +16,13 @@ class Orders(models.Model):
         ("multiple commodities", "Multiple Commodities "),
     }
     type = models.CharField(max_length=200, choices=types)
+    truck_types = {
+        (1, "jumbo box 2700 kg"),
+        (2, "jumbo box 5200 kg"),
+        (3, "jumbo box 5200 kg"),
+        (4, "tricycle 2700 kg"),
+    }
+    chosen_truck = models.CharField(max_length=100, choices=truck_types, null=True)
     pickup_time = models.DateTimeField()
     need_packing = models.BooleanField()
     need_labor = models.BooleanField()

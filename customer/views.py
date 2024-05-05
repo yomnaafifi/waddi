@@ -6,6 +6,8 @@ from customer.serializer import BaseUserSerializer, CustomerUserSerializer
 from django.core.exceptions import ValidationError
 from datetime import date
 from django.contrib.auth import get_user_model
+from orders.serializers import CreateOrderSerializer
+from orders.models import Orders
 
 VALID_USER = "valid user"
 EXISTING_CREDINTALS = "user with either the email or usename already exist"
@@ -41,5 +43,18 @@ class CustomerSignupView(generics.CreateAPIView):
                 customer.preferred_method = request.data["preferred_method"]
                 customer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CreateOrderView(generics.CreateAPIView):
+    queryset = Orders.objects.all()
+    serializer_class = CreateOrderSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
