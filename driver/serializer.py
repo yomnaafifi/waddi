@@ -3,9 +3,11 @@ from driver.models import Driver
 from authentication.serializers import BaseUserSerializer
 
 
+
 class DriverUserSerializer(ModelSerializer):
+
     user = BaseUserSerializer()
 
     class Meta:
         model = Driver
-        fields = ["user", "license"]
+        fields = ['user', 'license']
