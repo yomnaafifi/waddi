@@ -26,14 +26,21 @@ def validate_user_data(data):
 
 class DriverSignupView(generics.CreateAPIView):
     queryset = Driver.objects.all()
-    serializer_class = CreateDriverUserSerializer
+    serializer_class = DriverUserSerializer
 
-    # @extend_schema(responses=CreateDriverUserSerializer)
-    # def post(self, request, *args, **kwargs):
-    #     form = DriverSignupForm
-    #     if form.is_valid():
-    #         user_data = form.save()
-    #         serializer = self.get_serializer(user_data)
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED) #should redirect to home? 
-    #     else:
-    #         return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+    @extend_schema(request=DriverUserSerializer)
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            user_data = request.data["user"]
+            user_serializer = DriverUserSerializer(data=user_data)
+            if user_serializer.is_valid():
+                user = user_serializer.save()
+                user.is_driver = True
+                user.save()
+                driver = Driver.objects.create(user=user)
+                driver.preferred_method = request.data["preferred_method"]
+                driver.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
