@@ -2,7 +2,8 @@ from rest_framework import status, generics
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
 from customer.models import Customer
-from customer.serializer import BaseUserSerializer, CustomerUserSerializer
+from authentication.serializers import BaseUserSerializer, BaseUserDetails
+from customer.serializer import CustomerUserSerializer, ListCustomersSerializer
 from django.core.exceptions import ValidationError
 from datetime import date
 from django.contrib.auth import get_user_model
@@ -43,3 +44,20 @@ class CustomerSignupView(generics.CreateAPIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ListAllCustomersView(generics.ListAPIView):
+    # this is only for testing purposes
+    queryset = CustomUser.objects.all()
+    serializer_class = ListCustomersSerializer
+
+
+class CustomerDetailsView(generics.RetrieveAPIView):
+    queryset = Customer.objects.all()
+    serializer_class = BaseUserDetails
+    lookup_field = "pk"
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        serializer = self.serializer_class(user)
+        return Response(serializer.data)

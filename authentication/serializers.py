@@ -25,3 +25,12 @@ class BaseUserSerializer(ModelSerializer):
             "birthdate",
             "phone_no",
         ]
+
+
+class BaseUserDetails(ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = [
+            "first_name",
+            "last_name",
+        ]  # +image
