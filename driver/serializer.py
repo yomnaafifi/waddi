@@ -3,7 +3,9 @@ from driver.models import Driver
 from authentication.serializers import BaseUserSerializer
 
 
-class CreateDriverUserSerializer(ModelSerializer):
+
+class DriverUserSerializer(ModelSerializer):
+
     user = BaseUserSerializer()
 
     class Meta:

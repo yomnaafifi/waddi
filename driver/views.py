@@ -1,9 +1,29 @@
 from django.shortcuts import render
 from rest_framework import generics, status
 from drf_spectacular.utils import extend_schema
-from driver.serializer import BaseUserSerializer, CreateDriverUserSerializer
+from driver.serializer import DriverUserSerializer
 from rest_framework.response import Response
 from driver.models import Driver
+from django.core.exceptions import ValidationError
+from datetime import date
+from django.contrib.auth import get_user_model
+
+VALID_USER = "valid user"
+EXISTING_CREDINTALS = "user with either the email or usename already exist"
+
+CustomUser = get_user_model()
+
+
+def validate_user_data(data):
+
+    email = data["email"]
+
+    if CustomUser.objects.filter(email=email).count() == 0:
+        return VALID_USER
+    else:
+        return EXISTING_CREDINTALS
+
+
 class DriverSignupView(generics.CreateAPIView):
     queryset = Driver.objects.all()
     serializer_class = CreateDriverUserSerializer
