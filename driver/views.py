@@ -2,14 +2,15 @@ from rest_framework import status, generics
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
 from driver.models import Driver
-from driver.serializer import BaseUserSerializer, DriverUserSerializer
+from driver.serializer import DriverUserSerializer
 from django.core.exceptions import ValidationError
-from authentication.models import CustomUser
 from datetime import date
-
+from django.contrib.auth import get_user_model
 
 VALID_USER = "valid user"
 EXISTING_CREDINTALS = "user with either the email or usename already exist"
+
+CustomUser = get_user_model()
 
 
 def validate_user_data(data):
