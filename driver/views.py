@@ -1,8 +1,9 @@
-from rest_framework import status, generics
-from rest_framework.response import Response
+from django.shortcuts import render
+from rest_framework import generics, status
 from drf_spectacular.utils import extend_schema
-from driver.models import Driver
 from driver.serializer import DriverUserSerializer
+from rest_framework.response import Response
+from driver.models import Driver
 from django.core.exceptions import ValidationError
 from datetime import date
 from django.contrib.auth import get_user_model
