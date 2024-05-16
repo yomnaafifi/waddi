@@ -6,7 +6,7 @@ from customer.serializer import BaseUserSerializer, CustomerUserSerializer
 from django.core.exceptions import ValidationError
 from datetime import date
 from django.contrib.auth import get_user_model
-from orders.serializers import CreateOrderSerializer, ShipmentHistorySerializer
+from orders.serializers import ShipmentHistorySerializer
 from orders.models import Orders
 
 VALID_USER = "valid user"
@@ -45,24 +45,3 @@ class CustomerSignupView(generics.CreateAPIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class CreateOrderView(generics.CreateAPIView):
-    queryset = Orders.objects.all()
-    serializer_class = CreateOrderSerializer
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class CustomerShipmentHistoryView(generics.ListAPIView):
-    serializer_class = ShipmentHistorySerializer
-
-    def get_queryset(self):
-        user_id = self.kwargs["pk"]  # Accessing the 'pk' parameter from URL
-        return Orders.objects.filter(customer_id=user_id)
