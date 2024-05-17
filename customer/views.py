@@ -6,6 +6,8 @@ from customer.serializer import BaseUserSerializer, CustomerUserSerializer
 from django.core.exceptions import ValidationError
 from datetime import date
 from django.contrib.auth import get_user_model
+from orders.serializers import ShipmentHistorySerializer
+from orders.models import Orders
 
 VALID_USER = "valid user"
 EXISTING_CREDINTALS = "user with either the email or usename already exist"
