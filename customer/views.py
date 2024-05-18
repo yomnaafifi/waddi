@@ -1,5 +1,6 @@
 from rest_framework import status, generics
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
 from customer.models import Customer
 from authentication.serializers import BaseUserSerializer, BaseUserDetails
@@ -53,9 +54,10 @@ class ListAllCustomersView(generics.ListAPIView):
 
 
 class CustomerDetailsView(generics.RetrieveAPIView):
-    queryset = Customer.objects.all()
+    queryset = CustomUser.objects.all()
     serializer_class = BaseUserDetails
-    lookup_field = "pk"
+    permission_classes = [IsAuthenticated]
+    lookup_field = "id"
 
     def get(self, request, *args, **kwargs):
         user = request.user
