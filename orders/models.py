@@ -5,7 +5,7 @@ from datetime import datetime
 
 class Orders(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    order_notes = models.TextField(blank=True, null=True)
+    order_notes = models.CharField(blank=True, null=True)
     date_created = models.DateField(auto_now_add=True)
     time_created = models.TimeField(default=datetime.now().time())
     types = {
