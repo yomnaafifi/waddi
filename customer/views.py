@@ -47,7 +47,7 @@ class CustomerSignupView(generics.CreateAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ListAllCustomersView(generics.ListAPIView):
+class CustomersView(generics.ListAPIView):
     # this is only for testing purposes
     queryset = CustomUser.objects.all()
     serializer_class = ListCustomersSerializer
