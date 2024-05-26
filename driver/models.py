@@ -6,5 +6,8 @@ CustomUser = get_user_model()
 
 class Driver(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
-    license = models.CharField(max_length=255, null=True)
+    car_license = models.ImageField(upload_to=None, null=True)  # further edits needed
+    driver_license = models.ImageField(
+        upload_to=None, null=True
+    )  # further edits needed
     is_online = models.BooleanField(default=False)
