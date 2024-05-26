@@ -4,9 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
 from customer.models import Customer
 from authentication.serializers import BaseUserSerializer, BaseUserDetails
-from customer.serializer import CustomerUserSerializer, ListCustomersSerializer
-from django.core.exceptions import ValidationError
-from datetime import date
+from customer.serializer import CustomerUserSerializer
 from django.contrib.auth import get_user_model
 
 VALID_USER = "valid user"
@@ -47,17 +45,10 @@ class CustomerSignupView(generics.CreateAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CustomersView(generics.ListAPIView):
-    # this is only for testing purposes
-    queryset = CustomUser.objects.all()
-    serializer_class = ListCustomersSerializer
-
-
-class CustomerDetailsView(generics.RetrieveAPIView):
+class CustomerDetailsView(generics.GenericAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = BaseUserDetails
     permission_classes = [IsAuthenticated]
-    lookup_field = "id"
 
     def get(self, request, *args, **kwargs):
         user = request.user

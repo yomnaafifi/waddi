@@ -6,8 +6,6 @@ from authentication.serializers import BaseUserSerializer, BaseUserDetails
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from driver.models import Driver
-from django.core.exceptions import ValidationError
-from datetime import date
 from django.contrib.auth import get_user_model
 
 VALID_USER = "valid user"
@@ -48,11 +46,10 @@ class DriverSignupView(generics.CreateAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class DriverDetailsView(generics.RetrieveAPIView):
+class DriverDetailsView(generics.GenericAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = BaseUserDetails
     permission_classes = [IsAuthenticated]
-    lookup_field = "id"
 
     def get(self, request, *args, **kwargs):
         user = request.user

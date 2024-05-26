@@ -34,3 +34,10 @@ class BaseUserDetails(ModelSerializer):
             "first_name",
             "last_name",
         ]  # +image
+
+
+class ListUserSerializer(ModelSerializer):
+
+    class Meta:
+        model = CustomUser
+        exclude = ["image"]

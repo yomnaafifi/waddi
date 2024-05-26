@@ -14,10 +14,3 @@ class CustomerUserSerializer(ModelSerializer):
     class Meta:
         model = Customer
         fields = ["user", "preferred_method"]
-
-
-class ListCustomersSerializer(ModelSerializer):
-
-    class Meta:
-        model = CustomUser
-        exclude = ["image"]
