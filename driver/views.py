@@ -39,7 +39,8 @@ class DriverSignupView(generics.CreateAPIView):
                 user.is_driver = True
                 user.save()
                 driver = Driver.objects.create(user=user)
-                driver.license = request.data["license"]
+                driver.driver_license = request.data["driver_license"]
+                driver.car_license = request.data["car_license"]
                 driver.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
