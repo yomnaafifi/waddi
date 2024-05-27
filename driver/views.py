@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, status
 from drf_spectacular.utils import extend_schema
 from driver.serializer import DriverUserSerializer
-from authentication.serializers import BaseUserSerializer, BaseUserDetails
+from authentication.serializers import BaseUserSerializer
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from driver.models import Driver
@@ -45,14 +45,3 @@ class DriverSignupView(generics.CreateAPIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class DriverDetailsView(generics.GenericAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = BaseUserDetails
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, *args, **kwargs):
-        user = request.user
-        serializer = self.serializer_class(user)
-        return Response(serializer.data)

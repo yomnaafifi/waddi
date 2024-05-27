@@ -1,9 +1,8 @@
 from rest_framework import status, generics
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
 from customer.models import Customer
-from authentication.serializers import BaseUserSerializer, BaseUserDetails
+from authentication.serializers import BaseUserSerializer
 from customer.serializer import CustomerUserSerializer
 from django.contrib.auth import get_user_model
 
@@ -43,14 +42,3 @@ class CustomerSignupView(generics.CreateAPIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class CustomerDetailsView(generics.GenericAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = BaseUserDetails
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, *args, **kwargs):
-        user = request.user
-        serializer = self.serializer_class(user)
-        return Response(serializer.data)
