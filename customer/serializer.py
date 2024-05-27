@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 import re
 from django.contrib.auth import get_user_model
 
+from authentication.models import CustomUser
+
 
 class CustomerUserSerializer(ModelSerializer):
     user = BaseUserSerializer()
