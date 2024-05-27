@@ -2,9 +2,8 @@ from rest_framework import status, generics
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
 from customer.models import Customer
-from customer.serializer import BaseUserSerializer, CustomerUserSerializer
-from django.core.exceptions import ValidationError
-from datetime import date
+from authentication.serializers import BaseUserSerializer
+from customer.serializer import CustomerUserSerializer
 from django.contrib.auth import get_user_model
 from orders.serializers import ShipmentHistorySerializer
 from orders.models import Orders

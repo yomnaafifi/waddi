@@ -2,10 +2,10 @@ from django.shortcuts import render
 from rest_framework import generics, status
 from drf_spectacular.utils import extend_schema
 from driver.serializer import DriverUserSerializer
+from authentication.serializers import BaseUserSerializer
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from driver.models import Driver
-from django.core.exceptions import ValidationError
-from datetime import date
 from django.contrib.auth import get_user_model
 
 VALID_USER = "valid user"
@@ -33,13 +33,14 @@ class DriverSignupView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user_data = request.data["user"]
-            user_serializer = DriverUserSerializer(data=user_data)
+            user_serializer = BaseUserSerializer(data=user_data)
             if user_serializer.is_valid():
                 user = user_serializer.save()
                 user.is_driver = True
                 user.save()
                 driver = Driver.objects.create(user=user)
-                driver.preferred_method = request.data["preferred_method"]
+                driver.driver_license = request.data["driver_license"]
+                driver.car_license = request.data["car_license"]
                 driver.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
