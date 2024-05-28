@@ -7,6 +7,7 @@ CustomUser = get_user_model()
 class Driver(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
     car_license = models.ImageField(upload_to=None, null=True)  # further edits needed
+    city = models.CharField(max_length=100, default="cairo")
     driver_license = models.ImageField(
         upload_to=None, null=True
     )  # further edits needed
