@@ -1,10 +1,10 @@
 import json
 
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import sync_to_async, async_to_sync
 
 
-class DriverConsumer(AsyncWebsocketConsumer):
+class DriverConsumer(WebsocketConsumer):
     def connect(self):
         self.driver_group_name = (
             "drivers"  # add city field to driver model and it should be the group name
