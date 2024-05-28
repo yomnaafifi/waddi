@@ -3,13 +3,16 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async, async_to_sync
 from driver.models import driver
+from orders.models import Orders
+from . import serializers
 
 
 class DriverConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.driver_group_name = (
-            "drivers"  # add city field to driver model and it should be the group name
-        )
+            self.driver_city
+        )  # add city field to driver model and it should be the group name
+        # how do i only add the drivers to the correct group based on the city
 
         await self.accept()
 
@@ -20,15 +23,10 @@ class DriverConsumer(AsyncWebsocketConsumer):
             self.driver_group_name, self.channel_name
         )
 
-    async def receive(self, text_data=None, bytes_data=None):
-        text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        message = data["message"]
 
-        task_id = "12345"
         await self.channel_layer.group_send(
-            self.driver_group_name,
-            {
-                "type": "task_id",
-                "task_id": task_id,
-            },
+            self.group_name, {"type": "order_message", "message": message}
         )
