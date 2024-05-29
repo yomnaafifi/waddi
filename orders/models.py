@@ -45,3 +45,11 @@ class Orders(models.Model):
 
     class Meta:
         db_table = "orders"
+
+
+class Location(models.Model):
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+
+    class Meta:
+        db_table = "location"
