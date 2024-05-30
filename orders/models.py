@@ -2,6 +2,7 @@ from django.db import models
 from customer.models import Customer
 from driver.models import Driver
 from datetime import datetime
+from django.utils.timezone import now
 
 
 class Location(models.Model):
@@ -15,11 +16,15 @@ class Location(models.Model):
 class Orders(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     driver = models.ForeignKey(Driver, on_delete=models.CASCADE, null=True)
-    pickup_location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True)
-    dropoff_location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True)
+    pickup_location = models.ForeignKey(
+        Location, on_delete=models.CASCADE, related_name="pickup", null=True
+    )
+    dropoff_location = models.ForeignKey(
+        Location, on_delete=models.CASCADE, related_name="dropoff", null=True
+    )
     order_notes = models.CharField(max_length=255, blank=True, null=True)
     date_created = models.DateField(auto_now_add=True)
-    time_created = models.TimeField(default=datetime.now().time())
+    time_created = models.TimeField(default=now)
     types = {
         ("plastic&rubber", "Plastic and Rubber"),
         ("appliances", "Appliances"),

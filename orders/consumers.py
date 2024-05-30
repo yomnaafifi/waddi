@@ -9,9 +9,10 @@ from . import serializers
 
 class DriverConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.driver_group_name = (
-            self.driver_city  # should use sth like scope but not sure yet
-        )  # add city field to driver model and it should be the group name
+        self.driver_group_name = "tseting"
+        # self.driver_city
+        # should use sth like scope but not sure yet
+        # add city field to driver model and it should be the group name
         # how do i only add the drivers to the correct group based on the city
 
         await self.accept()
@@ -28,8 +29,13 @@ class DriverConsumer(AsyncWebsocketConsumer):
         message = data["message"]
 
         await self.channel_layer.group_send(
-            self.group_name, {"type": "order_message", "message": message}
+            self.driver_group_name, {"type": "order_message", "message": message}
         )
+
+    async def order_message(self, event):
+        message = event["message"]
+
+        await self.send(text_data=json.dumps({"message": message}))
 
     async def handle_accept_task(self, data):
         order_data = data("message")
