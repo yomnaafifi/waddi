@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "driver",
     "utils",
     "orders",
+    "payment",
     "drf_spectacular",
 ]
 
