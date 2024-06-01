@@ -1,4 +1,5 @@
 from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
 from orders.models import Orders
 from driver.models import Driver
 from orders.serializers import CreateOrderSerializer, ShipmentHistorySerializer
@@ -27,8 +28,11 @@ class CreateOrderView(generics.CreateAPIView):
 
 
 class CustomerShipmentHistoryView(generics.ListAPIView):
+    queryset = Orders.models.filter(status="confirmed")
     serializer_class = ShipmentHistorySerializer
+    permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        user_id = self.kwargs["pk"]  # Accessing the 'pk' parameter from URL
-        return Orders.objects.filter(customer_id=user_id)
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        serializer = self.serializer_class(user)
+        return Response(serializer.data)

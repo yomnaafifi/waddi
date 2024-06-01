@@ -8,7 +8,7 @@ class CreateOrderSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ShipmentHistorySerializer(serializers.ModelSerializer):
+class CustomerHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Orders
         fields = [

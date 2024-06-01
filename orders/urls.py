@@ -4,8 +4,8 @@ from orders import views
 urlpatterns = [
     path("create/", views.CreateOrderView.as_view(), name="create_order"),
     path(
-        "history/<str:pk>",
+        "history/",
         views.CustomerShipmentHistoryView.as_view(),
-        name="show_history",
+        name="customer_history",
     ),
 ]
