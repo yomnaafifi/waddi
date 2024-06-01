@@ -1,5 +1,6 @@
 from django.db import models
 from customer.models import Customer
+from payment.models import Transactions
 from datetime import datetime
 
 
@@ -29,6 +30,14 @@ class Orders(models.Model):
     pickup_time = models.TimeField(null=True)
     need_packing = models.BooleanField()
     need_labor = models.BooleanField()
+    transaction = models.ForeignKey(
+        Transactions,
+        on_delete=models.CASCADE,
+        related_name="order_transaction",
+        null=True,
+        blank=True,
+        default=None,
+    )  # till we decide on suitable default
 
     class Meta:
         db_table = "orders"
