@@ -2,7 +2,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from orders.models import Orders
 from driver.models import Driver
-from orders.serializers import CreateOrderSerializer, ShipmentHistorySerializer
+from orders.serializers import CreateOrderSerializer, CustomerHistorySerializer
 from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -29,7 +29,7 @@ class CreateOrderView(generics.CreateAPIView):
 
 class CustomerShipmentHistoryView(generics.ListAPIView):
     queryset = Orders.models.filter(status="confirmed")
-    serializer_class = ShipmentHistorySerializer
+    serializer_class = CustomerHistorySerializer
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
