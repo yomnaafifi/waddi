@@ -13,5 +13,8 @@ urlpatterns = [
         views.DriverShipmentHistoryView.as_view(),
         name="driver_history",
     ),
+    path(
+        "update/state/<str:pk>", views.ChangeOrderState.as_view(), name="change_state"
+    ),
     # path("testnew/", views.TESTNEWSER.as_view()),
 ]

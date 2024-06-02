@@ -59,3 +59,22 @@ class DriverShipmentHistoryView(generics.GenericAPIView):
 # class TESTNEWSER(generics.ListAPIView):
 #     queryset = CustomUser.objects.all()
 #     serializer_class = DriverUserSerializer
+
+
+class ChangeOrderState(generics.UpdateAPIView):
+    queryset = Orders.objects.all()
+    serializer_class = CreateOrderSerializer
+
+    def update(self, request, *args, **kwargs):
+        order = Orders.object.get(order_id=id)
+        new_state = request.data.get("new_state")
+        if new_state in dict(Orders.STATE_CHOICES):
+            order.order_state = new_state
+            order.save()
+            return Response(
+                {"success": f"State changed to {new_state}"}, status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {"error": "Invalid state"}, status=status.HTTP_400_BAD_REQUEST
+            )
