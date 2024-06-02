@@ -60,6 +60,7 @@ class Orders(models.Model):
     order_state = models.CharField(
         max_length=100, choices=order_states, default="unassigned"
     )
+    pricing = models.IntegerField(null=True)
 
     class Meta:
         db_table = "orders"

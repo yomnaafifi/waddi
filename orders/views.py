@@ -6,7 +6,9 @@ from orders.serializers import (
     CreateOrderSerializer,
     CustomerHistorySerializer,
     DriverHistorySerializer,
+    DriverUserSerializer,
 )
+from authentication.models import CustomUser
 from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -50,5 +52,10 @@ class DriverShipmentHistoryView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         user = request.user
         queryset = Orders.objects.filter(order_state="confirmed", driver_id=user.id)
-        serializer = self.serializer_class(queryset, many=True)
+        serializer = self.serializer_class(queryset)
         return Response(serializer.data)
+
+
+# class TESTNEWSER(generics.ListAPIView):
+#     queryset = CustomUser.objects.all()
+#     serializer_class = DriverUserSerializer
