@@ -2,7 +2,11 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from orders.models import Orders
 from driver.models import Driver
-from orders.serializers import CreateOrderSerializer, CustomerHistorySerializer
+from orders.serializers import (
+    CreateOrderSerializer,
+    CustomerHistorySerializer,
+    DriverHistorySerializer,
+)
 from rest_framework.response import Response
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -27,12 +31,24 @@ class CreateOrderView(generics.CreateAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CustomerShipmentHistoryView(generics.ListAPIView):
-    queryset = Orders.models.filter(status="confirmed")
+class CustomerShipmentHistoryView(generics.GenericAPIView):
+    # queryset = Orders.models.filter(status="confirmed")
     serializer_class = CustomerHistorySerializer
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        serializer = self.serializer_class(user)
+        queryset = Orders.objects.filter(order_state="confirmed", customer_id=user.id)
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
+
+class DriverShipmentHistoryView(generics.GenericAPIView):
+    serializer_class = DriverHistorySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        queryset = Orders.objects.filter(order_state="confirmed", driver_id=user.id)
+        serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)

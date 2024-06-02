@@ -5,7 +5,6 @@ from customer.models import Customer
 from authentication.serializers import BaseUserSerializer
 from customer.serializer import CustomerUserSerializer
 from django.contrib.auth import get_user_model
-from orders.serializers import ShipmentHistorySerializer
 from orders.models import Orders
 
 VALID_USER = "valid user"
