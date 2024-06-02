@@ -4,12 +4,14 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async, async_to_sync
 from driver.models import Driver
 from orders.models import Orders
-from . import serializers
+from orders.serializers import CreateOrderSerializer
 
 
 class DriverConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.driver_group_name = "tseting"
+        self.user = self.scope["user"]
+        self.user_id = self.user.id
         # self.driver_city
         # should use sth like scope but not sure yet
         # add city field to driver model and it should be the group name
@@ -48,14 +50,14 @@ class DriverConsumer(AsyncWebsocketConsumer):
         order_data = data("message")
         driver_id = self.scope["user"].id
 
-        await self.save_order_data(order_data, driver_id)
+        await self.save_order_data(order_data)
 
         await self.send(  # this is notifying the driver
             text_data=json.dumps({"message": "Task accepted and assigned."})
         )
 
     @sync_to_async
-    def save_order_data(self, order_data, driver_id):
+    def save_order_data(self, order_data):
         # here you should create the order object from the data the user will send
         # then save it to the database
         # the schema of data the user will return
@@ -77,19 +79,33 @@ class DriverConsumer(AsyncWebsocketConsumer):
 
         # }
 
+        # Validate the data using the serializer
+        serializer = CreateOrderSerializer(
+            data=order_data
+        )  # i dont get which format should get into the serialzier
+        if serializer.is_valid():
+            validated_data = serializer.validated_data
+            order = Orders.objects.create(
+                id=validated_data["id"],
+                customer_id=validated_data["customer_id"],
+                driver_id=validated_data["user_id"],
+                pickup_location=validated_data["pickup_location"],
+                dropoff_location=validated_data["dropoff_location"],
+                order_notes=validated_data["order_notes"],
+                type=validated_data["type"],
+                commodity_image=validated_data["commodit_image"],
+                chosen_truck=validated_data["chosen_truck"],
+                pickup_date=validated_data["pickup_date"],
+                pickup_time=validated_data["pickup_time"],
+                need_packing=validated_data["need_packing"],
+                need_labour=validated_data["need_labour"],
+                order_state=validated_data["order_state"],
+            )
+        return order.data
+        # will test this data first then add the rest of it
+
         ############################################################
 
         # then u create the data and validarate it with a serializer and save it
         # order = serializer.data
         # then u publish to all subscribers the order data "not all fields just the required" and the type of message will be order_request
-
-        order = Orders.objects.create(
-            id=order_data.get("id"),
-            defaults={
-                "driver_id": driver_id,
-                "customer": order_data.get("customer"),
-                "order_state": order_data.get(
-                    "order_state"
-                ),  # will test this data first then add the rest of it
-            },
-        )
