@@ -3,11 +3,26 @@ from customer.models import Customer
 from driver.models import Driver
 from datetime import datetime
 from django.utils.timezone import now
+from geopy.distance import geodesic
 
 
 class Location(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
+
+    def distance_to(self, other_location):
+
+        if other_location is None:
+            return None
+
+        # Create tuples of (latitude, longitude)
+        point1 = (self.latitude, self.longitude)
+        point2 = (other_location.latitude, other_location.longitude)
+
+        # Calculate the distance
+        distance = geodesic(point1, point2).kilometers
+
+        return distance
 
     class Meta:
         db_table = "location"
@@ -61,6 +76,13 @@ class Orders(models.Model):
         max_length=100, choices=order_states, default="unassigned"
     )
     pricing = models.IntegerField(null=True)
+
+    @property
+    def distance(self):
+
+        if self.pickup_location and self.dropoff_location:
+            return self.pickup_location.distance_to(self.dropoff_location)
+        return None
 
     class Meta:
         db_table = "orders"

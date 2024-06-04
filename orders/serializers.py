@@ -33,11 +33,11 @@ class DriverUserSerializer(serializers.ModelSerializer):
 
 
 class DriverHistorySerializer(serializers.ModelSerializer):
-    user = DriverUserSerializer()
+    driver = DriverUserSerializer()
 
     class Meta:
         model = Orders
-        fields = ["user", "pricing"]
+        fields = ["driver", "pricing"]
 
 
 # make it return only those field sfor now
