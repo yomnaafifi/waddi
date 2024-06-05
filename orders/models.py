@@ -39,10 +39,10 @@ types = {
 }
 
 truck_types = {
-    (1, "jumbo box 2700 kg"),
-    (2, "jumbo box 5200 kg"),
-    (3, "jumbo box 5200 kg"),
-    (4, "tricycle 2700 kg"),
+    (1, "small truck"),
+    (2, "large truck"),
+    (3, "special large truck"),
+    (4, "tricycle"),
 }
 order_states = {
     ("unassigned", "Unassigned"),
