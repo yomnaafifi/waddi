@@ -1,5 +1,7 @@
 from rest_framework import serializers
+from rest_framework.serializers import ValidationError
 from orders.models import Orders
+from driver.models import Driver
 from authentication.models import CustomUser
 
 
@@ -18,7 +20,7 @@ class CustomerHistorySerializer(serializers.ModelSerializer):
         ]
 
 
-class DriverUserSerializer(serializers.ModelSerializer):
+class DriverInstanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ["first_name", "last_name"]  # + driver image
@@ -27,13 +29,20 @@ class DriverUserSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
 
         if instance.is_driver != True:
-            return None
-
+            raise ValidationError("The instance is not a driver.")
         return representation
 
 
+class inbetweenSerializer(serializers.ModelSerializer):
+    user = DriverInstanceSerializer()
+
+    class Meta:
+        model = Driver
+        fields = ["user"]
+
+
 class DriverHistorySerializer(serializers.ModelSerializer):
-    driver = DriverUserSerializer()
+    driver = inbetweenSerializer()
 
     class Meta:
         model = Orders

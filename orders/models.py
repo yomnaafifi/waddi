@@ -70,6 +70,8 @@ class Orders(models.Model):
     chosen_truck = models.CharField(max_length=100, choices=truck_types, null=True)
     pickup_date = models.DateField(null=True)
     pickup_time = models.TimeField(null=True)
+    delivery_date = models.DateField(null=True)
+    delivery_time = models.TimeField(null=True)
     need_packing = models.BooleanField()
     need_labor = models.BooleanField()
     order_state = models.CharField(

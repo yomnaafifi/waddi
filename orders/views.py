@@ -6,7 +6,7 @@ from orders.serializers import (
     CreateOrderSerializer,
     CustomerHistorySerializer,
     DriverHistorySerializer,
-    DriverUserSerializer,
+    DriverInstanceSerializer,
 )
 from authentication.models import CustomUser
 from rest_framework.response import Response
@@ -46,13 +46,16 @@ class CustomerShipmentHistoryView(generics.GenericAPIView):
 
 
 class DriverShipmentHistoryView(generics.GenericAPIView):
+    # queryset = Orders.objects.all()
     serializer_class = DriverHistorySerializer
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        queryset = Orders.objects.filter(order_state="confirmed", driver_id=user.id)
-        serializer = self.serializer_class(queryset)
+        queryset = Orders.objects.filter(
+            order_state="confirmed", customer_id=user.id
+        ).order_by("-delivery_time")
+        serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
 
