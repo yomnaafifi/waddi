@@ -11,10 +11,10 @@ def generate_random_rating():
 
 class Driver(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
-    car_license = models.ImageField(upload_to=None, null=True)  # further edits needed
+    car_license = models.ImageField(
+        upload_to="images/", null=True
+    )  # will remove null when we enter data
     city = models.CharField(max_length=100, default="cairo")
-    driver_license = models.ImageField(
-        upload_to=None, null=True
-    )  # further edits needed
+    driver_license = models.ImageField(upload_to="images/", null=True)
     is_online = models.BooleanField(default=False)
     rating = models.FloatField(default=generate_random_rating)

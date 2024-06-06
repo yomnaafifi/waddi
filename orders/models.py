@@ -66,7 +66,7 @@ class Orders(models.Model):
     date_created = models.DateField(auto_now_add=True)
     time_created = models.TimeField(default=now)
     type = models.CharField(max_length=200, choices=types)
-    commodity_image = models.ImageField(upload_to=None, null=True)
+    commodity_image = models.ImageField(upload_to="images/", null=True)
     chosen_truck = models.CharField(max_length=100, choices=truck_types, null=True)
     pickup_date = models.DateField(null=True)
     pickup_time = models.TimeField(null=True)

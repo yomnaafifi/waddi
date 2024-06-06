@@ -44,7 +44,7 @@ class CustomUser(AbstractBaseUser):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     birthdate = models.DateField()
-    image = models.ImageField(upload_to=None)  # further edits needed
+    image = models.ImageField(upload_to="images/")  # further edits needed
     phone_no = models.CharField(max_length=100, validators=[validate_phone_number])
 
     @property
