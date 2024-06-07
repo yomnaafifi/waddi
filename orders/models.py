@@ -81,10 +81,10 @@ class Orders(models.Model):
 
     @property
     def distance(self):
-
+        distance = None
         if self.pickup_location and self.dropoff_location:
-            return self.pickup_location.distance_to(self.dropoff_location)
-        return None
+            distance = self.pickup_location.distance_to(self.dropoff_location)
+        return distance
 
     class Meta:
         db_table = "orders"
