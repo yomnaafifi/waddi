@@ -45,14 +45,3 @@ class DriverSignupView(generics.CreateAPIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class AssignedDriverDetails(generics.GenericAPIView):
-    queryset = Driver.objects.all()
-    serializer_class = AssignedDriverSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, *args, **kwargs):
-        user = request.user
-        serializer = self.serializer_class(user)
-        return Response(serializer.data)
