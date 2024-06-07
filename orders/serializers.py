@@ -11,6 +11,16 @@ class CreateOrderSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class CreateShortOrderSerializer(serializers.ModelSerializer):
+    Distance = serializers.SerializerMethodField()
+    Add_Ons = serializers.BooleanField(source="need_labor")
+    Truck = serializers.CharField(source="chosen_truck")
+
+    class Meta:
+        model = Orders
+        fields = ["Truck", "weight", "Distance", "Add_Ons"]
+
+
 class CustomerHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Orders

@@ -5,6 +5,7 @@ from orders.models import Orders
 from driver.models import Driver
 from orders.serializers import (
     CreateOrderSerializer,
+    CreateShortOrderSerializer,
     CustomerHistorySerializer,
     DriverHistorySerializer,
     DriverInstanceSerializer,
@@ -108,7 +109,7 @@ def predict(request):
 
 class CreateOrderView(generics.GenericAPIView):
     queryset = Orders.objects.all()
-    serializer_class = CreateOrderSerializer
+    serializer_class = CreateShortOrderSerializer
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
