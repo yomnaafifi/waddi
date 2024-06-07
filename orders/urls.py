@@ -16,5 +16,6 @@ urlpatterns = [
     path(
         "update/state/<str:pk>", views.ChangeOrderState.as_view(), name="change_state"
     ),
+    path("predict/", views.predict),
     # path("testnew/", views.TESTNEWSER.as_view()),
 ]
