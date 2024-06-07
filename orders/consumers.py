@@ -5,6 +5,34 @@ from asgiref.sync import sync_to_async, async_to_sync
 from driver.models import Driver
 from orders.models import Orders, Location
 from orders.serializers import CreateOrderSerializer
+from channels.db import database_sync_to_async
+
+
+@database_sync_to_async
+def create_order(order_data, user):
+    """create order from the data sent by the user"""
+    dropoff_location = Location.objects.create(
+        latitude=order_data["dropoff_location"]["latitude"],
+        longitude=order_data["dropoff_location"]["longitude"],
+    )
+    pickup_location = Location.objects.create(
+        latitude=order_data["pickup_location"]["latitude"],
+        longitude=order_data["pickup_location"]["longitude"],
+    )
+    order = Orders.objects.create(
+        customer=user,
+        pickup_location=pickup_location,
+        dropoff_location=dropoff_location,
+        order_notes=order_data["order_notes"],
+        type=order_data["type"],
+        chosen_truck=order_data["chosen_truck"],
+        pickup_date=order_data["pickup_date"],
+        pickup_time=order_data["pickup_time"],
+        need_packing=order_data["need_packing"],
+        need_labor=order_data["need_labor"],
+    )
+    order.save()
+    return order
 
 
 class DriverConsumer(AsyncWebsocketConsumer):
@@ -28,17 +56,17 @@ class DriverConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        message = data["order"]
+        message = data["message"]
         type_ = data["type"]
 
         await self.channel_layer.group_send(
-            self.driver_group_name, {"type": type_, "order": message}
+            self.driver_group_name, {"type": type_, "message": message}
         )
 
     async def order_message(self, event):
-        message = event["order"]
+        message = event["message"]
 
-        await self.send(text_data=json.dumps({"order": message}))
+        await self.send(text_data=json.dumps({"message": message}))
 
     # async def handle_accept_task(self, data):
     #     # here the driver will accept the task and the data will be sent to the server
@@ -55,8 +83,7 @@ class DriverConsumer(AsyncWebsocketConsumer):
     #     await self.send(  # this is notifying the driver
     #         text_data=json.dumps({"message": "Task accepted and assigned."})
     #     )
-    @sync_to_async
-    def order_request(self, event):
+    async def order_request(self, event):
         # here you should create the order object from the data the user will send
         # then save it to the database
         # the schema of data the user will return
@@ -73,30 +100,13 @@ class DriverConsumer(AsyncWebsocketConsumer):
         #     need_labor,
         #     order_state:(unassigned, assigned, pickup, delivered, confirmed)
         # }
-        order_data = event["order"]
+        order_data = event["message"]
         # Validate the data using the serializer
-        dropoff_location = Location.objects.create(
-            latitude=order_data["dropoff_location"]["latitude"],
-            longitude=order_data["dropoff_location"]["longitude"],
+        order = await create_order(order_data, self.user)
+
+        await self.send(
+            text_data=json.dumps({"message": f"order created with ID {order.id}"})
         )
-        pickup_location = Location.objects.create(
-            latitude=order_data["pickup_location"]["latitude"],
-            longitude=order_data["pickup_location"]["longitude"],
-        )
-        order = Orders.objects.create(
-            customer=self.user,
-            pickup_location=pickup_location,
-            dropoff_location=dropoff_location,
-            order_notes=order_data["order_notes"],
-            type=order_data["type"],
-            chosen_truck=order_data["chosen_truck"],
-            pickup_date=order_data["pickup_date"],
-            pickup_time=order_data["pickup_time"],
-            need_packing=order_data["need_packing"],
-            need_labor=order_data["need_labor"],
-        )
-        order.save()
-        self.send(text_data=json.dumps({"message": order.id}))
 
         ############################################################
 
