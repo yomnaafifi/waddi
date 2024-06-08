@@ -32,9 +32,9 @@ class DriverDetailsAsDriver(ModelSerializer):
         fields = ["user", "actual_car_license", "truck", "rating"]
 
 
-class OnBoardingOrderDetails(ModelSerializer):
+class OnBoardingOrderserializer(ModelSerializer):
     driver = DriverDetailsAsDriver()
 
     class Meta:
         model = Orders
-        fields = ["driver", "order_id", "order_state"]
+        fields = ["driver", "id", "order_state"]

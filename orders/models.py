@@ -54,6 +54,7 @@ order_states = {
 
 
 class Orders(models.Model):
+    # order_id = models.CharField(max_length=100, primary_key=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     driver = models.ForeignKey(Driver, on_delete=models.CASCADE, null=True)
     pickup_location = models.ForeignKey(
@@ -78,6 +79,7 @@ class Orders(models.Model):
         max_length=100, choices=order_states, default="unassigned"
     )
     pricing = models.IntegerField(null=True)
+    weight = models.FloatField(default=5.2)
 
     @property
     def distance(self):
