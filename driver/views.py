@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics, status
 from drf_spectacular.utils import extend_schema
-from driver.serializer import DriverUserSerializer, AssignedDriverSerializer
+from driver.serializer import DriverUserSerializer
 from authentication.serializers import BaseUserSerializer
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated

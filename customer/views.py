@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
 from customer.models import Customer
 from authentication.serializers import BaseUserSerializer
-from customer.serializer import CustomerUserSerializer, OnBoardingOrderSerializer
+from customer.serializer import CustomerUserSerializer, OnBoardingOrderDetails
 from django.contrib.auth import get_user_model
 from orders.models import Orders
 from driver.models import Driver
@@ -48,11 +48,11 @@ class CustomerSignupView(generics.CreateAPIView):
 
 
 class OnBoardingOrderView(generics.GenericAPIView):
-    queryset = Driver.objects.all()
-    serializer_class = OnBoardingOrderSerializer
+    serializer_class = OnBoardingOrderDetails
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        serializer = self.serializer_class(user)
+        queryset = Orders.objects.filter(customer_id=user.id)
+        serializer = self.serializer_class(queryset)
         return Response(serializer.data)

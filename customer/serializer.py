@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 
 from authentication.models import CustomUser
 from driver.models import Driver
+from orders.models import Orders
 
 
 class CustomerUserSerializer(ModelSerializer):
@@ -17,15 +18,23 @@ class CustomerUserSerializer(ModelSerializer):
         fields = ["user", "preferred_method"]
 
 
-class OnBoardingOrderSerializer(ModelSerializer):
-    user = BaseUserSerializer()
+class DriverDetailsAsUserserializer(ModelSerializer):  # this is for onboarding api
+    class Meta:
+        model = CustomUser
+        fields = ["first_name", "last_name", "image"]
+
+
+class DriverDetailsAsDriver(ModelSerializer):
+    user = DriverDetailsAsUserserializer()
 
     class Meta:
         model = Driver
-        fields = [
-            "user",
-            "first_name",
-            "last_name",
-            "phone_no",
-            "rating",
-        ]
+        fields = ["user", "actual_car_license", "truck", "rating"]
+
+
+class OnBoardingOrderDetails(ModelSerializer):
+    driver = DriverDetailsAsDriver()
+
+    class Meta:
+        model = Orders
+        fields = ["driver", "order_id", "order_state"]
