@@ -24,8 +24,6 @@ import joblib
 import json
 import requests
 
-# Load the model and scaler
-
 
 @api_view(["POST"])
 def predict(request):
@@ -51,56 +49,34 @@ def predict(request):
         )
 
     try:
-        # Load input data from request body
         if not request.body:
             return JsonResponse(
                 {"error": "Request body is empty"}, status=status.HTTP_400_BAD_REQUEST
             )
 
         data = json.loads(request.body)
-        # print(f"Received data: {data}")
-
-        # Convert the input data into a DataFrame
         df = pd.DataFrame([data])
-        # print(f"Input data as DataFrame:\n{df}")
-        # Preprocess the data
         df["Truck"] = df["Truck"].str.replace("Large Truck ", "Large Truck")
         df["Truck"] = df["Truck"].str.replace("Small Truck ", "Small Truck")
         df["Truck"] = df["Truck"].str.replace("Medium Truck ", "Medium Truck")
-
-        # Label encode the 'Truck' column if necessary
-        # Make sure to use the same LabelEncoder that was used during training
-        # label_encoder = joblib.load(
-        #     "label_encoder.pkl"
-        # )  # Assuming you saved the encoder as well
         df["Truck"] = label_encoder.transform(df["Truck"])
 
-        # Perform one-hot encoding for categorical variables
         input_data_encoded = pd.get_dummies(df)
-        # print(f"Encoded input data:\n{input_data_encoded}")
-
-        # Ensure all expected columns are present
         expected_columns = set(["Truck", "weight", "Distance", "Add_Ons"])
         missing_cols = expected_columns - set(input_data_encoded.columns)
         for col in missing_cols:
             input_data_encoded[col] = 0
 
-        # Reorder columns to match the training data
         input_data_encoded = input_data_encoded.reindex(
             columns=["Truck", "weight", "Distance", "Add_Ons"]
         )
-
-        # Scale the input data
         input_data_scaled = scaler_X.transform(input_data_encoded)
-
-        # Make a prediction
         prediction_scaled = rf_model_rus.predict(input_data_scaled)
         prediction = scaler_y.inverse_transform(
             prediction_scaled.reshape(-1, 1)
         ).flatten()
 
         return JsonResponse({"prediction": prediction.tolist()})
-
     except Exception as e:
         return JsonResponse(
             {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
