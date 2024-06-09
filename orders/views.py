@@ -25,7 +25,6 @@ import json
 import requests
 
 
-@api_view(["POST"])
 def predict(request):
 
     try:
@@ -83,55 +82,29 @@ def predict(request):
         )
 
 
+class testingshortserializer(generics.ListAPIView):
+    queryset = Orders.objects.all()
+    serializer_class = CreateShortOrderSerializer
+
+
 class CreateOrderView(generics.GenericAPIView):
     queryset = Orders.objects.all()
     serializer_class = CreateShortOrderSerializer
 
-    @transaction.atomic
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            # serializer.save()
             # channel_layer = get_channel_layer()
             # async_to_sync(channel_layer.group_send)(
             #     Driver.city, {"type": "order_message", "message": serializer.data}
             # )
-            try:
-                order = Orders.objects.create(**serializer.validated_data)
-                model_api_url = "http://127.0.0.1:8000/orders/predict/"
-                response = requests.post(model_api_url, json=serializer.validated_data)
-
-                if response.status_code == 200:
-                    prediction = response.json().get("prediction")
-                    if prediction:
-                        order.pricing = prediction[0]
-                        order.save()
-                        return Response(
-                            {"order_id": order.id, "predicted_price": prediction[0]},
-                            status=status.HTTP_201_CREATED,
-                        )
-                    else:
-                        return Response(
-                            {"error": "Prediction response is invalid."},
-                            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                        )
-                else:
-                    return Response(
-                        {"error": "Failed to get prediction from the model API"},
-                        status=response.status_code,
-                    )
-            except requests.RequestException as e:
-                return Response(
-                    {"error": f"Request to model API failed: {str(e)}"},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
-            except Exception as e:
-                return Response(
-                    {"error": f"Failed to create order: {str(e)}"},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            pricing = predict(request)
+            print(pricing)
+            validated_data = serializer.validated_data
+            print(validated_data)
+            validated_data["pricing"] = pricing
+            # serializer.save()
+            # return Response(validated_data)
 
 
 class CustomerShipmentHistoryView(generics.GenericAPIView):

@@ -17,5 +17,6 @@ urlpatterns = [
         "update/state/<str:pk>", views.ChangeOrderState.as_view(), name="change_state"
     ),
     path("predict/", views.predict),
+    path("test/", views.testingshortserializer.as_view()),
     # path("testnew/", views.TESTNEWSER.as_view()),
 ]

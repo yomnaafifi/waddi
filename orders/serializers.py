@@ -12,13 +12,17 @@ class CreateOrderSerializer(serializers.ModelSerializer):
 
 
 class CreateShortOrderSerializer(serializers.ModelSerializer):
-    Distance = serializers.SerializerMethodField()
     Add_Ons = serializers.BooleanField(source="need_labor")
     Truck = serializers.CharField(source="chosen_truck")
 
+    # Distance = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Orders
-        fields = ["Truck", "weight", "Distance", "Add_Ons"]
+        fields = ["Truck", "weight", "distance", "Add_Ons"]
+
+    # def get_Distance(self, instance):
+    #     return instance.distance()
 
 
 class CustomerHistorySerializer(serializers.ModelSerializer):

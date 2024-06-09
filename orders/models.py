@@ -86,7 +86,7 @@ class Orders(models.Model):
         distance = None
         if self.pickup_location and self.dropoff_location:
             distance = self.pickup_location.distance_to(self.dropoff_location)
-        return distance
+        return float(distance)
 
     class Meta:
         db_table = "orders"
