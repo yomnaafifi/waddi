@@ -25,61 +25,68 @@ import json
 import requests
 
 
-def predict(request):
+def predict(data):
 
-    try:
-        rf_model_rus = joblib.load(
-            "C:/Users/yomna/Desktop/waddi/orders/pricingmodel/model.pkl"
-        )
-        scaler_X = joblib.load(
-            "C:/Users/yomna/Desktop/waddi/orders/pricingmodel/scaler_X.pkl"
-        )
-        scaler_y = joblib.load(
-            "C:/Users/yomna/Desktop/waddi/orders/pricingmodel/scaler_Y.pkl"
-        )
-        label_encoder = joblib.load(
-            "C:/Users/yomna/Desktop/waddi/orders/pricingmodel/label_encoder.pkl"
-        )
+    # try:
+    rf_model_rus = joblib.load(
+        "C:/Users/yomna/Desktop/waddi/orders/pricingmodel/model.pkl"
+    )
+    scaler_X = joblib.load(
+        "C:/Users/yomna/Desktop/waddi/orders/pricingmodel/scaler_X.pkl"
+    )
+    scaler_y = joblib.load(
+        "C:/Users/yomna/Desktop/waddi/orders/pricingmodel/scaler_Y.pkl"
+    )
+    label_encoder = joblib.load(
+        "C:/Users/yomna/Desktop/waddi/orders/pricingmodel/label_encoder.pkl"
+    )
 
-    except Exception as e:
-        return JsonResponse(
-            {"error": f"Failed to load model: {str(e)}"},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
+    # except Exception as e:
+    # return JsonResponse(
+    #     {"error": f"Failed to load model: {str(e)}"},
+    #     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+    # )
 
-    try:
-        if not request.body:
-            return JsonResponse(
-                {"error": "Request body is empty"}, status=status.HTTP_400_BAD_REQUEST
-            )
+    # try:
+    # if not request.body:
+    #     return JsonResponse(
+    #         {"error": "Request body is empty"}, status=status.HTTP_400_BAD_REQUEST
+    # )
 
-        data = json.loads(request.body)
-        df = pd.DataFrame([data])
-        df["Truck"] = df["Truck"].str.replace("Large Truck ", "Large Truck")
-        df["Truck"] = df["Truck"].str.replace("Small Truck ", "Small Truck")
-        df["Truck"] = df["Truck"].str.replace("Medium Truck ", "Medium Truck")
-        df["Truck"] = label_encoder.transform(df["Truck"])
+    # data = json.loads(request.body)
+    # df = pd.DataFrame([data])
 
-        input_data_encoded = pd.get_dummies(df)
-        expected_columns = set(["Truck", "weight", "Distance", "Add_Ons"])
-        missing_cols = expected_columns - set(input_data_encoded.columns)
-        for col in missing_cols:
-            input_data_encoded[col] = 0
+    # Check if the data is a list of dictionaries or a single dictionary
+    if isinstance(data, dict):
+        df = pd.DataFrame([data])  # Convert single dictionary to DataFrame
+    elif isinstance(data, list):
+        df = pd.DataFrame(data)  # Convert list of dictionaries to DataFrame
+    df["Truck"] = df["Truck"].str.replace("Large Truck ", "Large Truck")
+    df["Truck"] = df["Truck"].str.replace("Small Truck ", "Small Truck")
+    df["Truck"] = df["Truck"].str.replace("Medium Truck ", "Medium Truck")
+    df["Truck"] = label_encoder.transform(df["Truck"])
 
-        input_data_encoded = input_data_encoded.reindex(
-            columns=["Truck", "weight", "Distance", "Add_Ons"]
-        )
-        input_data_scaled = scaler_X.transform(input_data_encoded)
-        prediction_scaled = rf_model_rus.predict(input_data_scaled)
-        prediction = scaler_y.inverse_transform(
-            prediction_scaled.reshape(-1, 1)
-        ).flatten()
+    input_data_encoded = pd.get_dummies(df)
+    expected_columns = set(["Truck", "weight", "Distance", "Add_Ons"])
+    missing_cols = expected_columns - set(input_data_encoded.columns)
+    for col in missing_cols:
+        input_data_encoded[col] = 0
 
-        return JsonResponse({"prediction": prediction.tolist()})
-    except Exception as e:
-        return JsonResponse(
-            {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+    input_data_encoded = input_data_encoded.reindex(
+        columns=["Truck", "weight", "Distance", "Add_Ons"]
+    )
+    input_data_scaled = scaler_X.transform(input_data_encoded)
+    prediction_scaled = rf_model_rus.predict(input_data_scaled)
+    prediction = scaler_y.inverse_transform(prediction_scaled.reshape(-1, 1)).flatten()
+    pricing_int = prediction[0]
+    return pricing_int
+    # return JsonResponse({"prediction": prediction.tolist()})
+
+
+# except Exception as e:
+# return JsonResponse(
+#     {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+# )
 
 
 class testingshortserializer(generics.ListAPIView):
@@ -94,17 +101,16 @@ class CreateOrderView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            # channel_layer = get_channel_layer()
-            # async_to_sync(channel_layer.group_send)(
-            #     Driver.city, {"type": "order_message", "message": serializer.data}
-            # )
-            pricing = predict(request)
-            print(pricing)
+            pricing = predict(request.data)
             validated_data = serializer.validated_data
-            print(validated_data)
             validated_data["pricing"] = pricing
-            # serializer.save()
-            # return Response(validated_data)
+
+            serializer.save(pricing=pricing)
+            response_data = serializer.data
+            response_data["pricing"] = pricing
+            return Response(response_data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CustomerShipmentHistoryView(generics.GenericAPIView):
