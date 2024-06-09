@@ -94,7 +94,7 @@ class testingshortserializer(generics.ListAPIView):
     serializer_class = CreateShortOrderSerializer
 
 
-class CreateOrderView(generics.GenericAPIView):
+class CalculatePriceView(generics.GenericAPIView):
     queryset = Orders.objects.all()
     serializer_class = CreateShortOrderSerializer
 
@@ -105,10 +105,10 @@ class CreateOrderView(generics.GenericAPIView):
             validated_data = serializer.validated_data
             validated_data["pricing"] = pricing
 
-            serializer.save(pricing=pricing)
-            response_data = serializer.data
-            response_data["pricing"] = pricing
-            return Response(response_data, status=status.HTTP_201_CREATED)
+            # serializer.save(pricing=pricing)
+            # response_data = serializer.data
+            # response_data["pricing"] = pricing
+            return Response(pricing, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
