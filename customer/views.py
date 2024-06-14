@@ -1,12 +1,16 @@
 from rest_framework import status, generics
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
 from customer.models import Customer
 from authentication.serializers import BaseUserSerializer
-from customer.serializer import CustomerUserSerializer
+from customer.serializer import (
+    CustomerUserSerializer,
+    OnBoardingOrderserializer,
+)
 from django.contrib.auth import get_user_model
-from orders.serializers import ShipmentHistorySerializer
 from orders.models import Orders
+from driver.models import Driver
 
 VALID_USER = "valid user"
 EXISTING_CREDINTALS = "user with either the email or usename already exist"
@@ -44,3 +48,14 @@ class CustomerSignupView(generics.CreateAPIView):
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OnBoardingOrderView(generics.GenericAPIView):
+    serializer_class = OnBoardingOrderserializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        queryset = Orders.objects.filter(customer_id=user.id).last()
+        serializer = self.serializer_class(queryset)
+        return Response(serializer.data)
