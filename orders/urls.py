@@ -2,10 +2,21 @@ from django.urls import path
 from orders import views
 
 urlpatterns = [
-    path("create/", views.CreateOrderView.as_view(), name="create_order"),
+    path("pricing/", views.CalculatePriceView.as_view(), name="calculate_price"),
     path(
-        "history/<str:pk>",
+        "customer/history/",
         views.CustomerShipmentHistoryView.as_view(),
-        name="show_history",
+        name="customer_history",
     ),
+    path(
+        "driver/history/",
+        views.DriverShipmentHistoryView.as_view(),
+        name="driver_history",
+    ),
+    path(
+        "update/state/<str:pk>", views.ChangeOrderState.as_view(), name="change_state"
+    ),
+    # path("predict/", views.predict),
+    path("test/", views.testingshortserializer.as_view()),
+    # path("testnew/", views.TESTNEWSER.as_view()),
 ]

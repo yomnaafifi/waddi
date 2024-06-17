@@ -24,7 +24,6 @@ class CustomUserManager(BaseUserManager):
 
         email = self.normalize_email(email)
         user = self.model(email=self.normalize_email(email), **extra_fields)
-        print("pwd:::::::::::::::::::::", password)
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -44,7 +43,7 @@ class CustomUser(AbstractBaseUser):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     birthdate = models.DateField()
-    image = models.ImageField(upload_to=None)  # further edits needed
+    image = models.ImageField(upload_to="images/")  # further edits needed
     phone_no = models.CharField(max_length=100, validators=[validate_phone_number])
 
     @property

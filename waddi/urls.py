@@ -16,6 +16,8 @@ Including another URLconf
 """
 
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path, include
 from drf_spectacular.views import (
     SpectacularAPIView,
@@ -44,4 +46,4 @@ urlpatterns = [
     # path('admin_user/', include('admin_user.urls')),
     # path('authentication/', include('authentication.urls')),
     # path('utils/', include('utils.urls')),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
