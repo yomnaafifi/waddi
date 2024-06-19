@@ -14,7 +14,6 @@ def returnUser(token_string):
     try:
         token_dict = Token(token_string)
         user = CustomUser.objects.get(id=token_dict["user_id"])
-        print(user.is_customer, "::::::::::::::::::::::::::::::")
         if user.is_customer:
             user = Customer.objects.get(user=user)
         elif user.is_driver:

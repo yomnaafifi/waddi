@@ -67,14 +67,14 @@ class Orders(models.Model):
     date_created = models.DateField(auto_now_add=True)
     time_created = models.TimeField(default=now)
     type = models.CharField(max_length=200, choices=types, default="plastic&rubber")
-    commodity_image = models.ImageField(upload_to="images/", null=True)
+    # commodity_image = models.ImageField(upload_to="images/", null=True)
     chosen_truck = models.CharField(max_length=100, choices=truck_types, default="1")
     pickup_date = models.DateField(null=True)
     pickup_time = models.TimeField(null=True)
     delivery_date = models.DateField(null=True)
     delivery_time = models.TimeField(null=True)
-    need_packing = models.BooleanField()
-    need_labor = models.BooleanField()
+    need_packing = models.BooleanField(default=False)
+    need_labor = models.BooleanField(default=False)
     order_state = models.CharField(
         max_length=100, choices=order_states, default="unassigned"
     )
