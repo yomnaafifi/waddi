@@ -14,7 +14,9 @@ urlpatterns = [
         name="driver_history",
     ),
     path(
-        "update/state/<str:pk>", views.ChangeOrderState.as_view(), name="change_state"
+        "<str:id>/state/<str:state>",
+        views.ChangeOrderState.as_view(),
+        name="change_state",
     ),
     # path("predict/", views.predict),
     path("test/", views.testingshortserializer.as_view()),
