@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from rest_framework import generics
+from payment.models import Transactions
+from payment.serializers import CreateTXserializer
 
-# Create your views here.
+
+class createtx(generics.CreateAPIView):
+    queryset = Transactions.objects.all()
+    serializer_class = CreateTXserializer
